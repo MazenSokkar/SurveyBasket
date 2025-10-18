@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SurveyBasket.Contracts\SurveyBasket.Contracts.csproj" />
     <ProjectReference Include="..\SurveyBasket.Infrastructure\SurveyBasket.Infrastructure.csproj" />
   </ItemGroup>
 

@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="SurveyBasket.Api/SurveyBasket.Api.csproj" />
+  <Project Path="SurveyBasket.Core/SurveyBasket.Core.csproj" Id="617aa119-89cb-4cbf-bee8-a4dc262b06d2" />
+  <Project Path="SurveyBasket.Infrastructure/SurveyBasket.Infrastructure.csproj" Id="ce515eec-8317-406a-a47b-d9fc11002c01" />
 </Solution>

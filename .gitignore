@@ -361,3 +361,73 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+.env.development
+**/appsettings.local.json
+**/appsettings.secrets.json
+
+# Ignore appsettings files with potential secrets, but keep templates
+**/appsettings.json
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/appsettings.Staging.json
+!**/appsettings.Template.json
+!**/appsettings.*.Template.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# Runtime files
+*.pid
+*.lock
+
+# Entity Framework - exclude auto-generated files but keep migration files
+
+# Docker
+Dockerfile.prod
+docker-compose.override.yml
+
+# Coverage reports
+coverage/
+*.opencover.xml
+lcov.info
+
+# Benchmark results
+BenchmarkDotNet.Artifacts/
+
+# JetBrains dotMemory
+*.dmw
+*.dmp
+
+# Local database files
+localdb/
+App_Data/
+
+# Temporary ASP.NET files
+App_Data/
+temporary-aspnet-files/

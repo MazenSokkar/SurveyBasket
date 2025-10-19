@@ -8,24 +8,31 @@ namespace SurveyBasket.Infrastructure.Services
 
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public IEnumerable<Poll> GetAll() => _unitOfWork.Polls.GetAll();
+        public async Task<IEnumerable<Poll>> GetAllAsync(CancellationToken cancellationToken = default) => await _unitOfWork.Polls.GetAllAsync(cancellationToken);
 
-        public Poll GetById(int Id) => _unitOfWork.Polls.GetById(Id);
+        public async Task<Poll?> GetByIdAsync(int Id, CancellationToken cancellationToken = default) => await _unitOfWork.Polls.GetByIdAsync(Id, cancellationToken);
 
-        public Poll Add(Poll poll)
+        public async Task<Poll> AddAsync(Poll poll, CancellationToken cancellationToken = default)
         {
-            _unitOfWork.Polls.Add(poll);
+            await _unitOfWork.Polls.AddAsync(poll, cancellationToken);
+            await _unitOfWork.Complete(cancellationToken);
             return poll;
         }
 
-        public bool Update(int id, Poll poll)
-        {
-            return _unitOfWork.Polls.Update(id, poll);
-        }
+        //public bool Update(int id, Poll poll)
+        //{
+        //    var result = _unitOfWork.Polls.Update(id, poll);
+        //    if (result)
+        //        _unitOfWork.Complete();
+        //    return result;
+        //}
 
-        public bool Delete(int id)
-        {
-            return _unitOfWork.Polls.Delete(id);
-        }
+        //public bool Delete(int id)
+        //{
+        //    var result = _unitOfWork.Polls.Delete(id);
+        //    if (result)
+        //        _unitOfWork.Complete();
+        //    return result;
+        //}
     }
 }

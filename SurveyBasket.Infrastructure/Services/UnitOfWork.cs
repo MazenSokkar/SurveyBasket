@@ -19,9 +19,9 @@ namespace SurveyBasket.Infrastructure.Services
            Polls = new GenericRepository<Poll>(_context);
         }
 
-        public int Complete()
+        public async Task<int> Complete(CancellationToken cancellationToken = default)
         {
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

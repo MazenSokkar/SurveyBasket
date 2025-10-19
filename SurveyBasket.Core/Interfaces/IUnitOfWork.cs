@@ -6,5 +6,5 @@ public interface IUnitOfWork : IDisposable
 {
     IGenericRepository<Poll> Polls {  get; }
 
-    int Complete();
+    Task<int> Complete(CancellationToken cancellationToken = default);
 }

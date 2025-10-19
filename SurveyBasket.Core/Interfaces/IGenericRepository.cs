@@ -2,13 +2,13 @@
 {
     public interface IGenericRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        T GetById(int id);
+        Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
-        T Add(T entity);
+        Task<T> AddAsync(T entity, CancellationToken cancellationToken = default);
 
-        bool Update(int id, T entity);
+        bool UpdateAsync(int id, T entity, CancellationToken cancellationToken = default);
 
         bool Delete(int id);
     }

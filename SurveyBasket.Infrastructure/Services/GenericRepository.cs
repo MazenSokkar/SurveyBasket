@@ -9,24 +9,25 @@ namespace SurveyBasket.Infrastructure.Services
 
         public readonly ApplicationDbContext _context = context;
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return _context.Set<T>().ToList();
+            return await _context.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
         }
 
-        public T GetById(int id)
+        public async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return _context.Set<T>().Find(id);
+            return await _context.Set<T>().FindAsync(id, cancellationToken);
         }
-        public T Add(T entity)
+
+        public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)
         {
-            _context.Set<T>().Add(entity);
+            await _context.Set<T>().AddAsync(entity, cancellationToken);
             return entity;
         }
 
-        public bool Update(int id, T entity)
+        public bool UpdateAsync(int id, T entity, CancellationToken cancellationToken = default)
         {
-            var t = _context.Set<T>().Find(id);
+            var t = _context.Set<T>().Find(id, cancellationToken);
 
             if (t != null)
             {

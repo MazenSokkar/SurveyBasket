@@ -9,7 +9,12 @@ namespace SurveyBasket.Contracts.Validations
         public AddPollRequestValidator()
         {
             RuleFor(x => x.Title)
-                .NotEmpty();
+                .NotEmpty()
+                .Length(3, 100);
+
+            RuleFor(x => x.Summary)
+                .NotEmpty()
+                .Length(3, 1500);
         }
 
     }

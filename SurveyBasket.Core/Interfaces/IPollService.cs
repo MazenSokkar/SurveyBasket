@@ -4,14 +4,14 @@ namespace SurveyBasket.Core.Interfaces
 {
     public interface IPollService
     {
-        IEnumerable<Poll> GetAll();
+        Task<IEnumerable<Poll>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Poll GetById(int Id);
+        Task<Poll?> GetByIdAsync(int Id, CancellationToken cancellationToken = default);
 
-        Poll Add(Poll poll);
+        Task<Poll> AddAsync(Poll poll, CancellationToken cancellationToken = default);
 
-        bool Update(int id, Poll poll);
+        //bool Update(int id, Poll poll);
 
-        bool Delete(int id);
+        //bool Delete(int id);
     }
 }

@@ -393,6 +393,19 @@ Desktop.ini
 !**/appsettings.Template.json
 !**/appsettings.*.Template.json
 
+./appsettings.json
+./appsettings.Development.json
+./appsettings.Production.json
+./appsettings.Staging.json
+../appsettings.json
+../appsettings.Development.json
+../appsettings.Production.json
+../appsettings.Staging.json
+SurveyBasket.Api/appsettings.json
+SurveyBasket.Api/appsettings.Development.json
+SurveyBasket.Api/appsettings.Production.json
+SurveyBasket.Api/appsettings.Staging.json
+
 # Database files
 *.db
 *.sqlite

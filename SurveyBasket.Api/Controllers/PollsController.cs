@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SurveyBasket.Api.Mapping;
+﻿using FluentValidation;
+using Mapster;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SurveyBasket.Contracts.Requests;
+using SurveyBasket.Contracts.Responses;
 using SurveyBasket.Core.Entities;
 using SurveyBasket.Core.Interfaces;
 
@@ -16,22 +19,22 @@ namespace SurveyBasket.Api.Controllers
         [HttpGet]
         public IActionResult GetAllPolls()
         {
-            return Ok(_pollService.GetAll().MapToResponse());
+            return Ok(_pollService.GetAll().Adapt<IEnumerable<Poll>>());
         }
 
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetPollById([FromRoute] int id)
         {
-            var poll = _pollService.GetById(id);
+            var poll = _pollService.GetById(id).Adapt<PollResponse>();
 
-            return poll is null ? NotFound() : Ok(poll.MapToResponse());
+            return poll is null ? NotFound() : Ok(poll);
         }
 
         [HttpPost("")]
-        public IActionResult AddPoll([FromBody] AddPollRequest request)
+        public IActionResult AddPoll([FromBody] AddPollRequest request, [FromServices] IValidator<AddPollRequest> validator)
         {
-            var newPoll = _pollService.Add(request.MapToPoll());
+            var newPoll = _pollService.Add(request.Adapt<Poll>());
 
             return CreatedAtAction(nameof(GetPollById), new { id = newPoll.Id} ,newPoll);
         }
@@ -39,7 +42,7 @@ namespace SurveyBasket.Api.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdatePoll([FromRoute] int id, [FromBody] AddPollRequest poll)
         {
-            var isUpdated = _pollService.Update(id, poll.MapToPoll());
+            var isUpdated = _pollService.Update(id, poll.Adapt<Poll>());
 
             return isUpdated? Ok(isUpdated) : NotFound();
         }

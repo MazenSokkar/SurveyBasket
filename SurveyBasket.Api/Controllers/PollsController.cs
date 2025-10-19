@@ -38,8 +38,8 @@ namespace SurveyBasket.Api.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> AddPoll([FromBody] AddPollRequest request, 
-            [FromServices] IValidator<AddPollRequest> validator,
+        public async Task<IActionResult> AddPoll([FromBody] PollRequest request, 
+            [FromServices] IValidator<PollRequest> validator,
             CancellationToken cancellationToken)
         {
             var mappedRequest = request.Adapt<Poll>();
@@ -49,20 +49,28 @@ namespace SurveyBasket.Api.Controllers
             return CreatedAtAction(nameof(GetPollById), new { id = newPoll.Id} ,newPoll);
         }
 
-        //[HttpPut("{id}")]
-        //public IActionResult UpdatePoll([FromRoute] int id, [FromBody] AddPollRequest poll)
-        //{
-        //    var isUpdated = _pollService.Update(id, poll.Adapt<Poll>());
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePoll([FromRoute] int id, [FromBody] PollRequest poll, CancellationToken cancellationToken)
+        {
+            var isUpdated = await _pollService.UpdateAsync(id, poll.Adapt<Poll>(), cancellationToken);
 
-        //    return isUpdated? Ok(isUpdated) : NotFound();
-        //}
+            return isUpdated ? Ok(isUpdated) : NotFound();
+        }
 
-        //[HttpDelete("{id}")]
-        //public IActionResult DeletePoll([FromRoute] int id) 
-        //{
-        //    var isDeleted = _pollService.Delete(id);
-            
-        //    return isDeleted? Ok(isDeleted) : NotFound();
-        //}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePoll([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var isDeleted = await _pollService.DeleteAsync(id);
+
+            return isDeleted ? Ok(isDeleted) : NotFound();
+        }
+
+        [HttpPut("{id}/ChangePublishStatus")]
+        public async Task<IActionResult> ChangePublishStatus([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var isToggled = await _pollService.TogglePublishStatusAsync(id, cancellationToken);
+
+            return isToggled ? Ok(isToggled) : NotFound();
+        }
     }
 }

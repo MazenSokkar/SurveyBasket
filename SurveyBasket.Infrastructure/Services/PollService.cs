@@ -19,20 +19,41 @@ namespace SurveyBasket.Infrastructure.Services
             return poll;
         }
 
-        //public bool Update(int id, Poll poll)
-        //{
-        //    var result = _unitOfWork.Polls.Update(id, poll);
-        //    if (result)
-        //        _unitOfWork.Complete();
-        //    return result;
-        //}
+        public async Task<bool> UpdateAsync(int id, Poll poll, CancellationToken cancellationToken = default)
+        {
+            var currentPoll = await _unitOfWork.Polls.GetByIdAsync(id, cancellationToken);
 
-        //public bool Delete(int id)
-        //{
-        //    var result = _unitOfWork.Polls.Delete(id);
-        //    if (result)
-        //        _unitOfWork.Complete();
-        //    return result;
-        //}
+            if (currentPoll is null)
+                return false;
+
+            currentPoll.Title = poll.Title;
+            currentPoll.Summary = poll.Summary;
+            currentPoll.StartsAt = poll.StartsAt;
+            currentPoll.EndsAt = poll.EndsAt;
+
+            await _unitOfWork.Complete(cancellationToken);
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var result = await _unitOfWork.Polls.DeleteAsync(id);
+            await _unitOfWork.Complete();
+            return result;
+        }
+
+        public async Task<bool> TogglePublishStatusAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var poll = await _unitOfWork.Polls.GetByIdAsync(id, cancellationToken);
+
+            if(poll is null)
+                return false;
+
+            poll.IsPublished = !poll.IsPublished;
+
+            await _unitOfWork.Complete(cancellationToken);
+
+            return true;
+        }
     }
 }

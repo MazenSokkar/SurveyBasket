@@ -1,6 +1,6 @@
 ﻿namespace SurveyBasket.Contracts.Requests
 {
-    public record AddPollRequest (
+    public record PollRequest (
         string Title, 
         string Summary,
         bool IsPublished,

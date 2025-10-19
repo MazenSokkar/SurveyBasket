@@ -10,8 +10,10 @@ namespace SurveyBasket.Core.Interfaces
 
         Task<Poll> AddAsync(Poll poll, CancellationToken cancellationToken = default);
 
-        //bool Update(int id, Poll poll);
+        Task<bool> UpdateAsync(int id, Poll poll, CancellationToken cancellationToken = default);
 
-        //bool Delete(int id);
+        Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
+    
+        Task<bool> TogglePublishStatusAsync(int id, CancellationToken cancellationToken = default);
     }
 }

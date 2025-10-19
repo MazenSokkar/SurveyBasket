@@ -25,22 +25,9 @@ namespace SurveyBasket.Infrastructure.Services
             return entity;
         }
 
-        public bool UpdateAsync(int id, T entity, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-            var t = _context.Set<T>().Find(id, cancellationToken);
-
-            if (t != null)
-            {
-                t = entity;
-                return true;
-            }
-            
-            return false;
-        }
-
-        public bool Delete(int id)
-        {
-            var t = _context.Set<T>().Find(id);
+            var t = await GetByIdAsync(id, cancellationToken);
 
             if(t != null)
             {

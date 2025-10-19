@@ -8,8 +8,6 @@
 
         Task<T> AddAsync(T entity, CancellationToken cancellationToken = default);
 
-        bool UpdateAsync(int id, T entity, CancellationToken cancellationToken = default);
-
-        bool Delete(int id);
+        Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
     }
 }

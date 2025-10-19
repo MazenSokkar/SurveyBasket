@@ -1,4 +1,4 @@
 ﻿namespace SurveyBasket.Contracts.Requests
 {
-    public record AddPollRequest (string Title, string Description);
+    public record AddPollRequest (string Title, string Summary);
 }

@@ -1,11 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using SurveyBasket.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<>
-
-builder.Services.AddApiDependencies();
+builder.Services.AddApiDependencies(builder.Configuration);
 
 var app = builder.Build();
 

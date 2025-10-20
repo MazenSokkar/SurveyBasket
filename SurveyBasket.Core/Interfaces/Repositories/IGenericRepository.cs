@@ -1,4 +1,4 @@
-﻿namespace SurveyBasket.Core.Interfaces
+﻿namespace SurveyBasket.Core.Interfaces.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {

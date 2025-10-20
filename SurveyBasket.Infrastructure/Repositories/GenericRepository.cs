@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SurveyBasket.Core.Interfaces;
+using SurveyBasket.Core.Interfaces.Repositories;
 using SurveyBasket.Infrastructure.Data;
 
-namespace SurveyBasket.Infrastructure.Services
+namespace SurveyBasket.Infrastructure.Repositories
 {
     public class GenericRepository<T>(ApplicationDbContext context) : IGenericRepository<T> where T : class
     {

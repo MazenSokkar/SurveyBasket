@@ -5,7 +5,9 @@ using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using SurveyBasket.Contracts;
 using SurveyBasket.Core.Interfaces;
+using SurveyBasket.Core.Interfaces.Repositories;
 using SurveyBasket.Infrastructure.Data;
+using SurveyBasket.Infrastructure.Repositories;
 using SurveyBasket.Infrastructure.Services;
 using System.Reflection;
 
@@ -32,6 +34,10 @@ namespace SurveyBasket.Api
         public static IServiceCollection AddEntitiesServicesDependencies(this IServiceCollection services)
         {
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IPollRepository, PollRepository>();
+            
             services.AddScoped<IPollService, PollService>();
 
             return services;

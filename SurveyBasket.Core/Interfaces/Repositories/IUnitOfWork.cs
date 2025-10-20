@@ -1,10 +1,8 @@
 ﻿using SurveyBasket.Core.Entities;
 
-namespace SurveyBasket.Core.Interfaces;
+namespace SurveyBasket.Core.Interfaces.Repositories;
 
 public interface IUnitOfWork : IDisposable
 {
-    IGenericRepository<Poll> Polls {  get; }
-
     Task<int> Complete(CancellationToken cancellationToken = default);
 }

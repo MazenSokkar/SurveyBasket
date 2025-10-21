@@ -4,8 +4,8 @@ namespace SurveyBasket.Core.Entities
 {
     public sealed class ApplicationUser : IdentityUser
     {
-        public string FirstName { get; set; } = String.Empty;
-        public string LastName { get; set; } = String.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
 
         public List<RefreshToken> RefreshTokens { get; set; } = [];
     }

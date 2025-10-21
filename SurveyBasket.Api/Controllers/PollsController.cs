@@ -46,7 +46,7 @@ namespace SurveyBasket.Api.Controllers
 
             var newPoll = await _pollService.AddAsync(mappedRequest, cancellationToken);
 
-            return CreatedAtAction(nameof(GetPollById), new { id = newPoll.Id} ,newPoll);
+            return CreatedAtAction(nameof(GetPollById), new { id = newPoll.Id} ,newPoll.Adapt<PollResponse>());
         }
 
         [HttpPut("{id}")]

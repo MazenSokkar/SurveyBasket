@@ -1,6 +1,6 @@
 ﻿using SurveyBasket.Core.Entities;
 
-namespace SurveyBasket.Core.Interfaces
+namespace SurveyBasket.Core.Interfaces.Services
 {
     public interface IPollService
     {

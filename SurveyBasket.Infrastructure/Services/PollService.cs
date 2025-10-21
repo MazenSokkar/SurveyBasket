@@ -1,6 +1,6 @@
 ﻿using SurveyBasket.Core.Entities;
-using SurveyBasket.Core.Interfaces;
 using SurveyBasket.Core.Interfaces.Repositories;
+using SurveyBasket.Core.Interfaces.Services;
 
 namespace SurveyBasket.Infrastructure.Services
 {

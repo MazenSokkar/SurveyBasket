@@ -1,16 +1,16 @@
 ﻿using FluentValidation;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using SurveyBasket.Contracts.Requests;
-using SurveyBasket.Contracts.Responses;
+using SurveyBasket.Contracts.Polls;
 using SurveyBasket.Core.Entities;
-using SurveyBasket.Core.Interfaces;
+using SurveyBasket.Core.Interfaces.Services;
 
 namespace SurveyBasket.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PollsController(IPollService pollService) : ControllerBase
     {
 

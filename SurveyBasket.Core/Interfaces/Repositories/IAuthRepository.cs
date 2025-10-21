@@ -1,11 +1,8 @@
 ﻿using SurveyBasket.Contracts.Auth;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SurveyBasket.Core.Interfaces.Services
+namespace SurveyBasket.Core.Interfaces.Repositories
 {
-    public interface IAuthService
+    public interface IAuthRepository
     {
         Task<AuthResponse?> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default);
     }

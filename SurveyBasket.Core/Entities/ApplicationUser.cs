@@ -7,5 +7,6 @@ namespace SurveyBasket.Core.Entities
         public string FirstName { get; set; } = String.Empty;
         public string LastName { get; set; } = String.Empty;
 
+        public List<RefreshToken> RefreshTokens { get; set; } = [];
     }
 }

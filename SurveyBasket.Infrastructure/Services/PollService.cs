@@ -7,6 +7,7 @@ using SurveyBasket.Core.Entities;
 using SurveyBasket.Core.Interfaces.Repositories;
 using SurveyBasket.Core.Interfaces.Services;
 using SurveyBasket.Infrastructure.Repositories;
+using System.Diagnostics;
 
 namespace SurveyBasket.Infrastructure.Services
 {
@@ -59,9 +60,12 @@ namespace SurveyBasket.Infrastructure.Services
 
             if (currentPoll is null)
                 return Result.Failure(PollErrors.NotFoundPolls);
-            
+
             var newPoll = poll.Adapt<Poll>();
-            
+
+            if (currentPoll.Title == newPoll.Title)
+                return Result.Failure(PollErrors.DublicatedPollTitle);
+
             currentPoll.Title = newPoll.Title;
             currentPoll.Summary = newPoll.Summary;
             currentPoll.StartsAt = newPoll.StartsAt;

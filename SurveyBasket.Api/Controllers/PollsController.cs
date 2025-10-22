@@ -23,7 +23,7 @@ namespace SurveyBasket.Api.Controllers
             var polls = await _pollService.GetAllAsync(cancellationToken);
 
             return polls.IsSuccess ? Ok(polls.Value)
-                : Problem(statusCode: StatusCodes.Status400BadRequest, title: polls.Error.Code, detail: polls.Error.Description);
+                : polls.ToProblem();
         }
 
         [HttpGet]
@@ -33,7 +33,7 @@ namespace SurveyBasket.Api.Controllers
             var poll = await _pollService.GetByIdAsync(id, cancellationToken);
 
             return poll.IsSuccess ? Ok(poll.Value)
-                : Problem(statusCode: StatusCodes.Status400BadRequest, title: poll.Error.Code, detail: poll.Error.Description);
+                : poll.ToProblem();
         }
 
         [HttpPost("")]
@@ -44,7 +44,7 @@ namespace SurveyBasket.Api.Controllers
             var newPoll = await _pollService.AddAsync(request, cancellationToken);
 
             return newPoll.IsSuccess ? CreatedAtAction(nameof(GetPollById), new { id = newPoll.Value.Id }, newPoll.Value)
-                : Problem(statusCode: StatusCodes.Status400BadRequest, title: newPoll.Error.Code, detail: newPoll.Error.Description);
+                : newPoll.ToProblem();
         }
 
         [HttpPut("{id}")]
@@ -53,7 +53,7 @@ namespace SurveyBasket.Api.Controllers
             var isUpdated = await _pollService.UpdateAsync(id, poll, cancellationToken);
 
             return isUpdated.IsSuccess ? Ok(isUpdated.IsSuccess)
-                : Problem(statusCode: StatusCodes.Status400BadRequest, title: isUpdated.Error.Code, detail: isUpdated.Error.Description);
+                : isUpdated.ToProblem();
         }
 
         [HttpDelete("{id}")]
@@ -62,7 +62,7 @@ namespace SurveyBasket.Api.Controllers
             var isDeleted = await _pollService.DeleteAsync(id);
 
             return isDeleted.IsSuccess ? Ok(isDeleted.IsSuccess)
-                : Problem(statusCode: StatusCodes.Status400BadRequest, title: isDeleted.Error.Code, detail: isDeleted.Error.Description);
+                : isDeleted.ToProblem();
         }
 
         [HttpPut("{id}/ChangePublishStatus")]
@@ -71,7 +71,7 @@ namespace SurveyBasket.Api.Controllers
             var isToggled = await _pollService.TogglePublishStatusAsync(id, cancellationToken);
 
             return isToggled.IsSuccess ? Ok(isToggled.IsSuccess)
-                : Problem(statusCode: StatusCodes.Status400BadRequest, title: isToggled.Error.Code, detail: isToggled.Error.Description);
+                : isToggled.ToProblem();
         }
     }
 }

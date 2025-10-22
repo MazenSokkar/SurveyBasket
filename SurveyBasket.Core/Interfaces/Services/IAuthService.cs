@@ -1,4 +1,5 @@
-﻿using SurveyBasket.Contracts.Auth;
+﻿using SurveyBasket.Contracts.Abstractions;
+using SurveyBasket.Contracts.Auth;
 using System;
 using System.Collections.Generic;
 using System.Text;

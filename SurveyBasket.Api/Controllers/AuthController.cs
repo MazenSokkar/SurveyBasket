@@ -16,7 +16,8 @@ namespace SurveyBasket.Api.Controllers
         {
             var authResult = await _authService.GetTokenAsync(authRequest.Email, authRequest.Password, cancellationToken);
 
-            return authResult is null ? BadRequest("Invalid email or password") : Ok(authResult);
+            return authResult.IsSuccess ? Ok(authResult.Value) 
+                : Problem(statusCode: StatusCodes.Status400BadRequest, title: authResult.Error.Code, detail: authResult.Error.Description);
         }
 
         [HttpPost("RefreshToken")]
@@ -24,7 +25,8 @@ namespace SurveyBasket.Api.Controllers
         {
             var result = await _authService.GetRefreshTokenAsync(refreshTokenRequest.Token, refreshTokenRequest.RefreshToken, cancellationToken);
 
-            return result is null ? BadRequest("Invalid Token") : Ok(result);
+            return result.IsSuccess ? Ok(result.Value) 
+                : Problem(statusCode: StatusCodes.Status400BadRequest, title: result.Error.Code, detail: result.Error.Description); 
         }
 
         [HttpPost("RevokeRefreshToken")]
@@ -32,7 +34,8 @@ namespace SurveyBasket.Api.Controllers
         {
             var result = await _authService.RevokeRefreshTokenAsync(refreshTokenRequest.Token, refreshTokenRequest.RefreshToken, cancellationToken);
 
-            return result is false ? BadRequest("Operation failed") : Ok();
+            return result.IsSuccess ? Ok(result.IsSuccess)
+                : Problem(statusCode: StatusCodes.Status400BadRequest, title: result.Error.Code, detail: result.Error.Description);
         }
     }
 }

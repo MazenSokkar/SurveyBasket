@@ -26,6 +26,14 @@ namespace SurveyBasket.Api
         {
             services.AddControllers();
 
+            services.AddCors(options =>
+                options.AddPolicy("AllowAll", builder =>
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                )
+            );
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 

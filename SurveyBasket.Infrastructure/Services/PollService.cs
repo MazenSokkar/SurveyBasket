@@ -42,6 +42,11 @@ namespace SurveyBasket.Infrastructure.Services
 
         public async Task<Result<PollResponse>> AddAsync(PollRequest poll, CancellationToken cancellationToken = default)
         {
+            var isExistingTitle = await _pollRepository.IsExistingTitleAsync(poll.Title, cancellationToken);
+
+            if (isExistingTitle)
+                return Result.Failure<PollResponse>(PollErrors.DublicatedPollTitle);
+
             var newPoll = await _pollRepository.AddAsync(poll.Adapt<Poll>(), cancellationToken);
 
             var response = newPoll.Adapt<PollResponse>();
@@ -56,15 +61,17 @@ namespace SurveyBasket.Infrastructure.Services
 
         public async Task<Result> UpdateAsync(int id, PollRequest poll, CancellationToken cancellationToken = default)
         {
+            var isExistingTitle = await _pollRepository.IsExistingTitleWithDifferentIdAsync(id,poll.Title, cancellationToken);
+
+            if (isExistingTitle)
+                return Result.Failure<PollResponse>(PollErrors.DublicatedPollTitle);
+
             var currentPoll = await _pollRepository.GetByIdAsync(id, cancellationToken);
 
             if (currentPoll is null)
                 return Result.Failure(PollErrors.NotFoundPolls);
 
             var newPoll = poll.Adapt<Poll>();
-
-            if (currentPoll.Title == newPoll.Title)
-                return Result.Failure(PollErrors.DublicatedPollTitle);
 
             currentPoll.Title = newPoll.Title;
             currentPoll.Summary = newPoll.Summary;

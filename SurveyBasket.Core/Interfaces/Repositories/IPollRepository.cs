@@ -4,5 +4,7 @@ namespace SurveyBasket.Core.Interfaces.Repositories
 {
     public interface IPollRepository : IGenericRepository<Poll>
     {
+        Task<bool> IsExistingTitleAsync(string title, CancellationToken cancellationToken);
+        Task<bool> IsExistingTitleWithDifferentIdAsync(int id, string title, CancellationToken cancellationToken);
     }
 }

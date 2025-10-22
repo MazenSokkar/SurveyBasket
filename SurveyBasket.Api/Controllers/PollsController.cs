@@ -41,10 +41,10 @@ namespace SurveyBasket.Api.Controllers
             [FromServices] IValidator<PollRequest> validator,
             CancellationToken cancellationToken)
         {
-            var newPoll = await _pollService.AddAsync(request, cancellationToken);
+            var result = await _pollService.AddAsync(request, cancellationToken);
 
-            return newPoll.IsSuccess ? CreatedAtAction(nameof(GetPollById), new { id = newPoll.Value.Id }, newPoll.Value)
-                : newPoll.ToProblem();
+            return result.IsSuccess ? CreatedAtAction(nameof(GetPollById), new { id = result.Value.Id }, result.Value)
+                : result.ToProblem();
         }
 
         [HttpPut("{id}")]

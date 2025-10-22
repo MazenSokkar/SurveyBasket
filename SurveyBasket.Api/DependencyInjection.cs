@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SurveyBasket.Contracts;
+using SurveyBasket.Contracts.Errors;
 using SurveyBasket.Core.Entities;
 using SurveyBasket.Core.Interfaces.Repositories;
 using SurveyBasket.Core.Interfaces.Services;
@@ -56,6 +57,9 @@ namespace SurveyBasket.Api
 
             services.AddScoped<IPollService, PollService>();
             services.AddScoped<IAuthService, AuthService>();
+
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
 
             return services;
         }

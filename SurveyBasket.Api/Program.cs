@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using SurveyBasket.Api;
+using SurveyBasket.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,5 +23,7 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseExceptionHandler();
 
 app.Run();

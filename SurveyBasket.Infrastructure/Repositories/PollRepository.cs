@@ -1,12 +1,15 @@
-﻿using SurveyBasket.Core.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SurveyBasket.Core.Entities;
 using SurveyBasket.Core.Interfaces.Repositories;
+using SurveyBasket.Infrastructure.Data;
 
 namespace SurveyBasket.Infrastructure.Repositories
 {
-    public class PollRepository(IGenericRepository<Poll> genericRepository) : IPollRepository
+    public class PollRepository(IGenericRepository<Poll> genericRepository, ApplicationDbContext context) : IPollRepository
     {
 
         private readonly IGenericRepository<Poll> _genericRepository = genericRepository;
+        private readonly ApplicationDbContext _context = context;
 
         public async Task<Poll> AddAsync(Poll entity, CancellationToken cancellationToken = default)
             => await _genericRepository.AddAsync(entity, cancellationToken);    
@@ -19,5 +22,11 @@ namespace SurveyBasket.Infrastructure.Repositories
 
         public async Task<Poll?> GetByIdAsync(int id, CancellationToken cancellationToken = default) 
             => await _genericRepository.GetByIdAsync(id, cancellationToken);
+
+        public async Task<bool> IsExistingTitleAsync(string title, CancellationToken cancellationToken)
+            => await _context.Polls.AnyAsync(x => x.Title == title, cancellationToken);
+
+        public async Task<bool> IsExistingTitleWithDifferentIdAsync(int id, string title, CancellationToken cancellationToken)
+            => await _context.Polls.AnyAsync(x => x.Title == title && x.Id != id, cancellationToken);
     }
 }

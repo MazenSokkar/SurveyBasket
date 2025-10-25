@@ -7,7 +7,7 @@ namespace SurveyBasket.Infrastructure.Repositories
     public class GenericRepository<T>(ApplicationDbContext context) : IGenericRepository<T> where T : class
     {
 
-        public readonly ApplicationDbContext _context = context;
+        private readonly ApplicationDbContext _context = context;
 
         public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {

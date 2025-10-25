@@ -12,7 +12,7 @@ namespace SurveyBasket.Infrastructure.Repositories
         private readonly ApplicationDbContext _context = context;
 
         public async Task<Poll> AddAsync(Poll entity, CancellationToken cancellationToken = default)
-            => await _genericRepository.AddAsync(entity, cancellationToken);    
+            => await _genericRepository.AddAsync(entity, cancellationToken);
 
         public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
             => await _genericRepository.DeleteAsync(id, cancellationToken);
@@ -28,5 +28,8 @@ namespace SurveyBasket.Infrastructure.Repositories
 
         public async Task<bool> IsExistingTitleWithDifferentIdAsync(int id, string title, CancellationToken cancellationToken)
             => await _context.Polls.AnyAsync(x => x.Title == title && x.Id != id, cancellationToken);
+
+        public async Task<bool> IsExistingPoll(int id, CancellationToken cancellationToken)
+            => await _context.Polls.AnyAsync(x => x.Id == id, cancellationToken);
     }
 }

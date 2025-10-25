@@ -6,5 +6,6 @@ namespace SurveyBasket.Core.Interfaces.Repositories
     {
         Task<bool> IsExistingTitleAsync(string title, CancellationToken cancellationToken);
         Task<bool> IsExistingTitleWithDifferentIdAsync(int id, string title, CancellationToken cancellationToken);
+        Task<bool> IsExistingPoll(int id, CancellationToken cancellationToken);
     }
 }

@@ -12,7 +12,7 @@ namespace SurveyBasket.Api.Controllers
     {
         private readonly IAuthService _authService = authService;
 
-        [HttpPost]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest authRequest, CancellationToken cancellationToken)
         {
             var authResult = await _authService.GetTokenAsync(authRequest.Email, authRequest.Password, cancellationToken);

@@ -1,0 +1,136 @@
+﻿using Mapster;
+using SurveyBasket.Contracts.Abstractions;
+using SurveyBasket.Contracts.Errors;
+using SurveyBasket.Contracts.Questions;
+using SurveyBasket.Core.Entities;
+using SurveyBasket.Core.Interfaces.Repositories;
+using SurveyBasket.Core.Interfaces.Services;
+using System.Linq;
+
+namespace SurveyBasket.Infrastructure.Services
+{
+    public class QuestionService(IQuestionRepository questionRepository, IUnitOfWork unitOfWork, IPollRepository pollRepository) : IQuestionService
+    {
+        private readonly IQuestionRepository _questionRepository = questionRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IPollRepository _pollRepository = pollRepository;
+
+        public async Task<Result<QuestionResponse>> AddAsync(QuestionRequest questionRequest, CancellationToken cancellationToken = default)
+        {
+            var pollIsExists = await _pollRepository.IsExistingPoll(questionRequest.PollId, cancellationToken);
+
+            if (!pollIsExists)
+                return Result.Failure<QuestionResponse>(PollErrors.NotFoundPolls);
+
+            var questionIsExists = await _questionRepository.IsExistingQuestionForAdd(questionRequest.PollId, questionRequest.Content, cancellationToken);
+
+            if (questionIsExists)
+                return Result.Failure<QuestionResponse>(QuestionErrors.DublicatedQuestion);
+
+            var newQuestion = questionRequest.Adapt<Question>();
+            newQuestion.PollId = questionRequest.PollId;
+
+            await _questionRepository.AddAsync(newQuestion, cancellationToken);
+            await _unitOfWork.Complete(cancellationToken);
+
+            return Result.Success(newQuestion.Adapt<QuestionResponse>());
+        }
+
+        public async Task<Result<QuestionResponse>> GetQuestionsById(int pollId, int questionId, CancellationToken cancellationToken)
+        {
+            var pollIsExists = await _pollRepository.IsExistingPoll(pollId, cancellationToken);
+
+            if (!pollIsExists)
+                return Result.Failure<QuestionResponse>(PollErrors.NotFoundPolls);
+
+            var question = await _questionRepository.GetQuestionsById(pollId,questionId ,cancellationToken);
+
+            if (question is null)
+                return Result.Failure<QuestionResponse>(QuestionErrors.NotFoundQuestions);
+
+            var result = question.Adapt<QuestionResponse>();
+
+            return Result.Success(result);
+        }
+
+        public async Task<Result<IEnumerable<QuestionResponse>>> GellQuestionsByPollIdAsync(int pollId, CancellationToken cancellationToken = default)
+        {
+            var pollIsExists = await _pollRepository.IsExistingPoll(pollId, cancellationToken);
+
+            if (!pollIsExists)
+                return Result.Failure<IEnumerable<QuestionResponse>>(PollErrors.NotFoundPolls);
+
+            var questions = await _questionRepository.GellQuestionsByPollId(pollId, cancellationToken);
+
+            if (questions is null)
+                return Result.Failure<IEnumerable<QuestionResponse>>(QuestionErrors.NotFoundQuestions);
+
+            return Result.Success(questions);
+        }
+
+        public async Task<Result> ToggleActiveStatusAsync(int pollId, int questionId, CancellationToken cancellationToken = default)
+        {
+            var pollIsExists = await _pollRepository.IsExistingPoll(pollId, cancellationToken);
+
+            if (!pollIsExists)
+                return Result.Failure<QuestionResponse>(PollErrors.NotFoundPolls);
+
+            var question = await _questionRepository.GetQuestionsById(pollId, questionId, cancellationToken);
+
+            if (question is null)
+                return Result.Failure<QuestionResponse>(QuestionErrors.NotFoundQuestions);
+
+            question.IsActive = !question.IsActive;
+
+            await _unitOfWork.Complete(cancellationToken);
+
+            return Result.Success();
+        }
+
+        public async Task<Result> UpdateAsync(int questionId, QuestionRequest request, CancellationToken cancellationToken = default)
+        {
+            var pollIsExists = await _pollRepository.IsExistingPoll(request.PollId, cancellationToken);
+
+            if (!pollIsExists)
+                return Result.Failure<QuestionResponse>(PollErrors.NotFoundPolls);
+
+            var isExcistingQuestion = await _questionRepository.IsExistingQuestionForUpdate(
+                pollId: request.PollId,
+                questionId: questionId,
+                questionContent: request.Content,
+                cancellationToken: cancellationToken
+            );
+
+            if (isExcistingQuestion)
+                return Result.Failure<QuestionResponse>(QuestionErrors.DublicatedQuestion);
+            
+            var question = await _questionRepository.GetQuestionsById(request.PollId, questionId, cancellationToken);
+
+            if (question is null)
+                return Result.Failure<QuestionResponse>(QuestionErrors.NotFoundQuestions);
+
+            question.PollId = request.PollId;
+            question.Content = request.Content;
+
+            // current answers
+            var currentAnswers = question.Answers.Select(answer => answer.Content).ToList();
+
+            //add new answers
+            var newAnswers = request.Answers.Except(currentAnswers).ToList();
+
+            newAnswers.ForEach(answer =>
+            {
+                question.Answers.Add(new Answer { Content = answer });
+            });
+
+            question.Answers.ToList().ForEach(answer =>
+            {
+                answer.IsActive = request.Answers.Contains(answer.Content);
+            });
+
+            await _unitOfWork.Complete(cancellationToken); 
+
+            return Result.Success(question);
+        }
+    }
+}

@@ -49,13 +49,15 @@ namespace SurveyBasket.Api
 
         private static IServiceCollection AddEntitiesServicesDependencies(this IServiceCollection services)
         {
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IPollRepository, PollRepository>();
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
 
             services.AddScoped<IPollService, PollService>();
+            services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddExceptionHandler<GlobalExceptionHandler>();

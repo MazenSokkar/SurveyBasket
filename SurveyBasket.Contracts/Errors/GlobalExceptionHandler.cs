@@ -12,7 +12,7 @@ namespace SurveyBasket.Contracts.Errors
 
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            _logger.LogError(e, "Error Occured: [Message]", e.Message);
+            _logger.LogError(exception, "Error Occured: [Message]", exception.Message);
 
             var problemDetails = new ProblemDetails
             {

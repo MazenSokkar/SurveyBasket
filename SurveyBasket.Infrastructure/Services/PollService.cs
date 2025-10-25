@@ -49,12 +49,12 @@ namespace SurveyBasket.Infrastructure.Services
 
             var newPoll = await _pollRepository.AddAsync(poll.Adapt<Poll>(), cancellationToken);
 
+            await _unitOfWork.Complete(cancellationToken);
+
             var response = newPoll.Adapt<PollResponse>();
             
             if (response is null)
                 return Result.Failure<PollResponse>(PollErrors.NotFoundPolls);
-
-            await _unitOfWork.Complete(cancellationToken);
             
             return Result.Success(response);
         }
@@ -85,8 +85,14 @@ namespace SurveyBasket.Infrastructure.Services
 
         public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
+            var poll = await _pollRepository.GetByIdAsync(id, cancellationToken);
+
+            if (poll is null)
+                return Result.Failure(PollErrors.NotFoundPolls);
+
             await _pollRepository.DeleteAsync(id);
             await _unitOfWork.Complete(cancellationToken);
+ 
             return Result.Success();
         }
 
@@ -105,3 +111,4 @@ namespace SurveyBasket.Infrastructure.Services
         }
     }
 }
+

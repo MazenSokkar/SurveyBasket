@@ -17,7 +17,7 @@ namespace SurveyBasket.Api.Controllers
 
         private readonly IPollService _pollService = pollService;
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllPolls(CancellationToken cancellationToken)
         {
             var polls = await _pollService.GetAllAsync(cancellationToken);
@@ -36,7 +36,7 @@ namespace SurveyBasket.Api.Controllers
                 : poll.ToProblem();
         }
 
-        [HttpPost("")]
+        [HttpPost("Add")]
         public async Task<IActionResult> AddPoll([FromBody] PollRequest request, 
             [FromServices] IValidator<PollRequest> validator,
             CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ namespace SurveyBasket.Api.Controllers
                 : result.ToProblem();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdatePoll([FromRoute] int id, [FromBody] PollRequest poll, CancellationToken cancellationToken)
         {
             var isUpdated = await _pollService.UpdateAsync(id, poll, cancellationToken);
@@ -56,7 +56,7 @@ namespace SurveyBasket.Api.Controllers
                 : isUpdated.ToProblem();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeletePoll([FromRoute] int id)
         {
             var isDeleted = await _pollService.DeleteAsync(id);
@@ -65,7 +65,7 @@ namespace SurveyBasket.Api.Controllers
                 : isDeleted.ToProblem();
         }
 
-        [HttpPut("{id}/ChangePublishStatus")]
+        [HttpPut("ChangePublishStatus/{id}")]
         public async Task<IActionResult> ChangePublishStatus([FromRoute] int id, CancellationToken cancellationToken)
         {
             var isToggled = await _pollService.TogglePublishStatusAsync(id, cancellationToken);

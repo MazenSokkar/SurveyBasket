@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using SurveyBasket.Api;
-using SurveyBasket.Api.Middlewares;
+using SurveyBasket.Core.Entities;
+using SurveyBasket.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

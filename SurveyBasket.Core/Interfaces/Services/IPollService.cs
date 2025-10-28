@@ -7,6 +7,8 @@ namespace SurveyBasket.Core.Interfaces.Services
     public interface IPollService
     {
         Task<Result<IEnumerable<PollResponse>>> GetAllAsync(CancellationToken cancellationToken = default);
+        
+        Task<Result<IEnumerable<PollResponse>>> GetCurrentAsync(CancellationToken cancellationToken = default);
 
         Task<Result<PollResponse>> GetByIdAsync(int Id, CancellationToken cancellationToken = default);
 

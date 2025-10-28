@@ -12,6 +12,8 @@ namespace SurveyBasket.Core.Interfaces.Repositories
         Task<bool> IsExistingQuestionForAdd(int pollId, string questionContent, CancellationToken cancellationToken);
         Task<bool> IsExistingQuestionForUpdate(int pollId, int questionId, string questionContent, CancellationToken cancellationToken);
         Task<IEnumerable<QuestionResponse>> GellQuestionsByPollId(int pollId, CancellationToken cancellationToken);
+        Task<IEnumerable<QuestionResponse>> GetAvailableQuestions(int pollId, string UserId, CancellationToken cancellationToken);
         Task<Question?> GetQuestionsById(int pollId, int questionId, CancellationToken cancellationToken);
+        Task<IEnumerable<int>> GetPollQuestionsIds(int pollId, CancellationToken cancellationToken);
     }
 }

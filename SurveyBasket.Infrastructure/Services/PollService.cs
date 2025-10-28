@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using Azure;
+using Mapster;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using SurveyBasket.Contracts.Abstractions;
 using SurveyBasket.Contracts.Errors;
@@ -26,6 +27,14 @@ namespace SurveyBasket.Infrastructure.Services
                 return Result.Failure<IEnumerable<PollResponse>>(PollErrors.NotFoundPolls);
             
             return Result.Success(response);
+        }
+
+        public async Task<Result<IEnumerable<PollResponse>>> GetCurrentAsync(CancellationToken cancellationToken = default)
+        {
+            var polls = await _pollRepository.GetCurrentAsync(cancellationToken);
+            if (polls is null)
+                return Result.Failure<IEnumerable<PollResponse>>(PollErrors.NotFoundPolls);
+            return Result.Success(polls);
         }
 
         public async Task<Result<PollResponse>> GetByIdAsync(int Id, CancellationToken cancellationToken = default)

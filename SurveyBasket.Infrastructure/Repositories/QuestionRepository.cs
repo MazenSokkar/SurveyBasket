@@ -67,5 +67,27 @@ namespace SurveyBasket.Infrastructure.Repositories
                 .Include(q => q.Answers)
                 .SingleOrDefaultAsync(q => q.PollId == pollId && q.Id == questionId, cancellationToken);
         }
+
+        public async Task<IEnumerable<QuestionResponse>> GetAvailableQuestions(int pollId, string UserId, CancellationToken cancellationToken)
+        {
+            return await _context.Questions
+                .Where(x => x.PollId == pollId && x.IsActive)
+                .Include (x => x.Answers)
+                .Select(q => new QuestionResponse(
+                    q.Id,
+                    q.PollId,
+                    q.IsActive,
+                    q.Content,
+                    q.Answers.Where(a => a.IsActive).Select(a => new AnswerResponse(a.Id, a.Content))
+                ))
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<int>> GetPollQuestionsIds(int pollId, CancellationToken cancellationToken)
+            => await _context.Questions
+                .Where(x => x.PollId == pollId && x.IsActive)
+                .Select(x => x.Id)
+                .ToListAsync(cancellationToken);
     }
 }

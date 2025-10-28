@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
+using SurveyBasket.Contracts.Polls;
 using SurveyBasket.Core.Entities;
 using SurveyBasket.Core.Interfaces.Repositories;
 using SurveyBasket.Infrastructure.Data;
+using System.Security.Cryptography;
 
 namespace SurveyBasket.Infrastructure.Repositories
 {
@@ -31,5 +34,22 @@ namespace SurveyBasket.Infrastructure.Repositories
 
         public async Task<bool> IsExistingPoll(int id, CancellationToken cancellationToken)
             => await _context.Polls.AnyAsync(x => x.Id == id, cancellationToken);
+
+        public async Task<bool> IsRunningPoll(int id, CancellationToken cancellationToken)
+            => await _context.Polls.AnyAsync(x => x.Id == id && x.IsPublished && x.StartsAt <= DateOnly.FromDateTime(DateTime.UtcNow) && x.EndsAt >= DateOnly.FromDateTime(DateTime.UtcNow), cancellationToken);
+
+        public async Task<IEnumerable<PollResponse>> GetCurrentAsync(CancellationToken cancellationToken)
+            => await _context.Polls
+                .Where(x => x.IsPublished && x.StartsAt <= DateOnly.FromDateTime(DateTime.UtcNow) && x.EndsAt >= DateOnly.FromDateTime(DateTime.UtcNow))
+                .AsNoTracking()
+                .Select(p => new PollResponse(
+                    p.Id,
+                    p.Title,
+                    p.Summary,
+                    p.IsPublished,
+                    p.StartsAt,
+                    p.EndsAt
+                ))
+                .ToListAsync(cancellationToken);
     }
 }

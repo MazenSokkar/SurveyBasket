@@ -9,11 +9,12 @@ using System.Linq;
 
 namespace SurveyBasket.Infrastructure.Services
 {
-    public class QuestionService(IQuestionRepository questionRepository, IUnitOfWork unitOfWork, IPollRepository pollRepository) : IQuestionService
+    public class QuestionService(IQuestionRepository questionRepository, IUnitOfWork unitOfWork, IPollRepository pollRepository, IVoteRepository voteRepository) : IQuestionService
     {
         private readonly IQuestionRepository _questionRepository = questionRepository;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IPollRepository _pollRepository = pollRepository;
+        private readonly IVoteRepository _voteRepository = voteRepository;
 
         public async Task<Result<QuestionResponse>> AddAsync(QuestionRequest questionRequest, CancellationToken cancellationToken = default)
         {
@@ -131,6 +132,23 @@ namespace SurveyBasket.Infrastructure.Services
             await _unitOfWork.Complete(cancellationToken); 
 
             return Result.Success(question);
+        }
+
+        public async Task<Result<IEnumerable<QuestionResponse>>> GellAvailableQuestionsAsync(int pollId, string userId, CancellationToken cancellationToken = default)
+        {
+            var hasVote = await _voteRepository.QuestionHasVote(pollId, userId, cancellationToken);
+
+            if (hasVote)
+                return Result.Failure<IEnumerable<QuestionResponse>>(VoteErrors.DuplicatedVote);
+
+            var isRunningPoll = await _pollRepository.IsRunningPoll(pollId, cancellationToken);
+            
+            if(!isRunningPoll)
+                return Result.Failure<IEnumerable<QuestionResponse>>(PollErrors.NotFoundPolls);
+
+            var questions = await _questionRepository.GetAvailableQuestions(pollId, userId, cancellationToken);
+
+            return Result.Success(questions);
         }
     }
 }

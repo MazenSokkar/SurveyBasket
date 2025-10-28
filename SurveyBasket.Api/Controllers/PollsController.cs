@@ -26,6 +26,15 @@ namespace SurveyBasket.Api.Controllers
                 : polls.ToProblem();
         }
 
+        [HttpGet("GetCurrent")]
+        public async Task<IActionResult> GetCurrentPolls(CancellationToken cancellationToken)
+        {
+            var polls = await _pollService.GetCurrentAsync(cancellationToken);
+
+            return polls.IsSuccess ? Ok(polls.Value)
+                : polls.ToProblem();
+        }
+
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetPollById([FromRoute] int id, CancellationToken cancellationToken)

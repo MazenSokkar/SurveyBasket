@@ -55,11 +55,13 @@ namespace SurveyBasket.Api
             services.AddScoped<IPollRepository, PollRepository>();
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IVoteRepository, VoteRepository>();
+            services.AddScoped<IResultRepository, ResultRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
 
             services.AddScoped<IPollService, PollService>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IVoteService, VoteService>();
+            services.AddScoped<IResultService, ResultService>();
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddExceptionHandler<GlobalExceptionHandler>();

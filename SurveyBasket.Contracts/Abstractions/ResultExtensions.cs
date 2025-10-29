@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace SurveyBasket.Contracts.Abstractions
 {
@@ -10,7 +9,7 @@ namespace SurveyBasket.Contracts.Abstractions
             if (result.IsSuccess)
                 throw new InvalidOperationException("Can't convert success result to problem");
 
-            var problem = Results.Problem(statusCode: result.Error.statusCode);
+            var problem = Microsoft.AspNetCore.Http.Results.Problem(statusCode: result.Error.statusCode);
             
             var problemDetails = problem.GetType().GetProperty(nameof(ProblemDetails))!.GetValue(problem) as ProblemDetails;
 

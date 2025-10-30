@@ -4,39 +4,38 @@ using SurveyBasket.Contracts.Abstractions;
 using SurveyBasket.Contracts.Auth;
 using SurveyBasket.Core.Interfaces.Services;
 
-namespace SurveyBasket.Api.Controllers
+namespace SurveyBasket.Api.Controllers;
+
+[Route("[controller]")]
+[ApiController]
+public class AuthController(IAuthService authService) : ControllerBase
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class AuthController(IAuthService authService) : ControllerBase
+    private readonly IAuthService _authService = authService;
+
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest authRequest, CancellationToken cancellationToken)
     {
-        private readonly IAuthService _authService = authService;
+        var authResult = await _authService.GetTokenAsync(authRequest.Email, authRequest.Password, cancellationToken);
 
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest authRequest, CancellationToken cancellationToken)
-        {
-            var authResult = await _authService.GetTokenAsync(authRequest.Email, authRequest.Password, cancellationToken);
+        return authResult.IsSuccess ? Ok(authResult.Value)
+            : authResult.ToProblem();
+    }
 
-            return authResult.IsSuccess ? Ok(authResult.Value)
-                : authResult.ToProblem();
-        }
+    [HttpPost("RefreshToken")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken)
+    {
+        var result = await _authService.GetRefreshTokenAsync(refreshTokenRequest.Token, refreshTokenRequest.RefreshToken, cancellationToken);
 
-        [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken)
-        {
-            var result = await _authService.GetRefreshTokenAsync(refreshTokenRequest.Token, refreshTokenRequest.RefreshToken, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) 
+            : result.ToProblem();
+    }
 
-            return result.IsSuccess ? Ok(result.Value) 
-                : result.ToProblem();
-        }
+    [HttpPost("RevokeRefreshToken")]
+    public async Task<IActionResult> RevokeToken([FromBody] RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken)
+    {
+        var result = await _authService.RevokeRefreshTokenAsync(refreshTokenRequest.Token, refreshTokenRequest.RefreshToken, cancellationToken);
 
-        [HttpPost("RevokeRefreshToken")]
-        public async Task<IActionResult> RevokeToken([FromBody] RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken)
-        {
-            var result = await _authService.RevokeRefreshTokenAsync(refreshTokenRequest.Token, refreshTokenRequest.RefreshToken, cancellationToken);
-
-            return result.IsSuccess ? Ok(result.IsSuccess)
-                : result.ToProblem();
-        }
+        return result.IsSuccess ? Ok(result.IsSuccess)
+            : result.ToProblem();
     }
 }

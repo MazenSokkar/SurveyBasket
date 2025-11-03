@@ -1,20 +1,31 @@
 ﻿using Mapster;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Logging;
 using SurveyBasket.Contracts.Abstractions;
 using SurveyBasket.Contracts.Errors;
 using SurveyBasket.Contracts.Questions;
 using SurveyBasket.Core.Entities;
 using SurveyBasket.Core.Interfaces.Repositories;
 using SurveyBasket.Core.Interfaces.Services;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SurveyBasket.Infrastructure.Services
 {
-    public class QuestionService(IQuestionRepository questionRepository, IUnitOfWork unitOfWork, IPollRepository pollRepository, IVoteRepository voteRepository) : IQuestionService
+    public class QuestionService(
+        IQuestionRepository questionRepository,
+        IUnitOfWork unitOfWork,
+        IPollRepository pollRepository,
+        IVoteRepository voteRepository,
+        HybridCache hybridCache) : IQuestionService
     {
         private readonly IQuestionRepository _questionRepository = questionRepository;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IPollRepository _pollRepository = pollRepository;
         private readonly IVoteRepository _voteRepository = voteRepository;
+        private readonly HybridCache _hybridCache = hybridCache;
+        private readonly string _cachePrefix = "availableQuestions";
 
         public async Task<Result<QuestionResponse>> AddAsync(QuestionRequest questionRequest, CancellationToken cancellationToken = default)
         {
@@ -33,6 +44,10 @@ namespace SurveyBasket.Infrastructure.Services
 
             await _questionRepository.AddAsync(newQuestion, cancellationToken);
             await _unitOfWork.Complete(cancellationToken);
+
+            var cacheKey = $"{_cachePrefix}-{questionRequest.PollId}";
+
+            await _hybridCache.RemoveAsync(cacheKey, cancellationToken);
 
             return Result.Success(newQuestion.Adapt<QuestionResponse>());
         }
@@ -146,7 +161,15 @@ namespace SurveyBasket.Infrastructure.Services
             if(!isRunningPoll)
                 return Result.Failure<IEnumerable<QuestionResponse>>(PollErrors.NotFoundPolls);
 
-            var questions = await _questionRepository.GetAvailableQuestions(pollId, userId, cancellationToken);
+            var cacheKey = $"{_cachePrefix}-{pollId}";
+
+            var questions = await _hybridCache.GetOrCreateAsync<IEnumerable<QuestionResponse>>(
+                cacheKey,
+                async cacheEntry =>
+                {
+                    return await _questionRepository.GetAvailableQuestions(pollId, userId, cancellationToken);
+                }
+            );
 
             return Result.Success(questions);
         }

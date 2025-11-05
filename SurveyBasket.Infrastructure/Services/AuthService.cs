@@ -1,10 +1,12 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using SurveyBasket.Contracts.Abstractions;
 using SurveyBasket.Contracts.Auth;
 using SurveyBasket.Contracts.Errors;
+using SurveyBasket.Contracts.Helpers;
 using SurveyBasket.Core.Entities;
 using SurveyBasket.Core.Interfaces.Repositories;
 using SurveyBasket.Core.Interfaces.Services;
@@ -13,11 +15,16 @@ using System.Text;
 
 namespace SurveyBasket.Infrastructure.Services;
 
-public class AuthService(IAuthRepository authRepository, IJwtProvider jwtProvider) : IAuthService
+public class AuthService(IAuthRepository authRepository,
+    IJwtProvider jwtProvider,
+    IEmailSender emailSender,
+    IHttpContextAccessor httpContextAccessor) : IAuthService
 {
     private readonly IAuthRepository _authRepository = authRepository;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
-
+    private readonly IEmailSender _emailSender = emailSender;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    
     private readonly int _refreshTokenExpiryDays = 14;
 
     public async Task<Result<AuthResponse>> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -139,7 +146,7 @@ public class AuthService(IAuthRepository authRepository, IJwtProvider jwtProvide
             var code = await _authRepository.GenerateVerificationCode(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-            // TODO: send Email
+            await SendConfirmationEmail(user, code);
 
             return Result.Success();
         }
@@ -196,7 +203,7 @@ public class AuthService(IAuthRepository authRepository, IJwtProvider jwtProvide
         var code = await _authRepository.GenerateVerificationCode(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-        // TODO: send Email
+        await SendConfirmationEmail(user, code);
 
         return Result.Success();
     }
@@ -204,5 +211,20 @@ public class AuthService(IAuthRepository authRepository, IJwtProvider jwtProvide
     private static string GenerateRefreshToken()
     {
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    }
+
+    private async Task SendConfirmationEmail(ApplicationUser user, string code)
+    {
+        var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
+
+        var emailBody = EmailBodyBuilder.GenerateEmailBody("EmailConfirmation",
+            new Dictionary<string, string>
+            {
+                    { "{{name}}", user.FirstName },
+                    { "{{action_url}}", $"{origin}/auth/emailConfirmation?userId={user.Id}&verificationCode={code}" }
+            }
+        );
+
+        await _emailSender.SendEmailAsync(user.Email!, "SurveyBasket Email Confirmation", emailBody);
     }
 }

@@ -4,6 +4,7 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SurveyBasket.Contracts;
@@ -39,7 +40,7 @@ namespace SurveyBasket.Api
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddOpenApiDependencies()
-                .AddEntitiesServicesDependencies()
+                .AddEntitiesServicesDependencies(configuration)
                 .AddMapsterConfig()
                 .AddFluentValidationConfig()
                 .AddAuthConfig(configuration);
@@ -47,7 +48,7 @@ namespace SurveyBasket.Api
             return services;
         }
 
-        private static IServiceCollection AddEntitiesServicesDependencies(this IServiceCollection services)
+        private static IServiceCollection AddEntitiesServicesDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             
@@ -57,15 +58,19 @@ namespace SurveyBasket.Api
             services.AddScoped<IVoteRepository, VoteRepository>();
             services.AddScoped<IResultRepository, ResultRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
-
+            
             services.AddScoped<IPollService, PollService>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IVoteService, VoteService>();
             services.AddScoped<IResultService, ResultService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IEmailSender, EmailService>();
 
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
+
+            services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+            services.AddHttpContextAccessor();
 
             return services;
         }
